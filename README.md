@@ -30,6 +30,8 @@ module "dataform" {
 
 See [example/examplea](example/examplea) for a complete working example.
 
+<!-- the cron defaults (e.g. "0 6 * * *") in the generated table below read as emphasis to markdownlint -->
+<!-- markdownlint-disable MD037 -->
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
 
@@ -63,15 +65,15 @@ No modules.
 | Name | Description | Type | Default | Required |
 | ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_display_name"></a> [display\_name](#input\_display\_name) | Human-readable display name of the repository. Null to use the name | `string` | `null` | no |
-| <a name="input_git_remote_settings"></a> [git\_remote\_settings](#input\_git\_remote\_settings) | Optional third-party Git remote. The access token is held in Secret Manager and referenced by its secret version name. Null for a Dataform-hosted repository (and no release/workflow configs) | <pre>object({<br/>    url                                 = string<br/>    default\_branch                      = string<br/>    authentication\_token\_secret\_version = string<br/>  })</pre> | `null` | no |
+| <a name="input_git_remote_settings"></a> [git\_remote\_settings](#input\_git\_remote\_settings) | Optional third-party Git remote. The access token is held in Secret Manager and referenced by its secret version name. Null for a Dataform-hosted repository (and no release/workflow configs) | <pre>object({<br/>    url                                 = string<br/>    default_branch                      = string<br/>    authentication_token_secret_version = string<br/>  })</pre> | `null` | no |
 | <a name="input_kms_key_name"></a> [kms\_key\_name](#input\_kms\_key\_name) | CMEK key used to encrypt the repository and its derived data; must be in the same region as the repository | `string` | n/a | yes |
 | <a name="input_labels"></a> [labels](#input\_labels) | Labels applied to the repository for cost allocation and ownership tracking | `map(string)` | `{}` | no |
 | <a name="input_name"></a> [name](#input\_name) | Name of the Dataform repository | `string` | n/a | yes |
 | <a name="input_region"></a> [region](#input\_region) | Region for the Dataform repository | `string` | `"europe-west2"` | no |
-| <a name="input_release_config"></a> [release\_config](#input\_release\_config) | Release configuration, created only when git\_remote\_settings is set | <pre>object({<br/>    name             = optional(string, "production")<br/>    git\_commitish    = optional(string, "main")<br/>    cron\_schedule    = optional(string, "0 6 * * *")<br/>    default\_schema   = optional(string, "dataform")<br/>    default\_location = optional(string)<br/>    assertion\_schema = optional(string, "dataform\_assertions")<br/>  })</pre> | `{}` | no |
+| <a name="input_release_config"></a> [release\_config](#input\_release\_config) | Release configuration, created only when git\_remote\_settings is set | <pre>object({<br/>    name             = optional(string, "production")<br/>    git_commitish    = optional(string, "main")<br/>    cron_schedule    = optional(string, "0 6 * * *")<br/>    default_schema   = optional(string, "dataform")<br/>    default_location = optional(string)<br/>    assertion_schema = optional(string, "dataform_assertions")<br/>  })</pre> | `{}` | no |
 | <a name="input_service_account"></a> [service\_account](#input\_service\_account) | Email of the custom service account Dataform runs workflow invocations as; must not be a default GCP service account | `string` | n/a | yes |
 | <a name="input_time_zone"></a> [time\_zone](#input\_time\_zone) | IANA time zone used for the release and workflow cron schedules | `string` | `"Etc/UTC"` | no |
-| <a name="input_workflow_config"></a> [workflow\_config](#input\_workflow\_config) | Workflow (scheduled invocation) configuration, created only when git\_remote\_settings is set. Runs as var.service\_account | <pre>object({<br/>    name          = optional(string, "production")<br/>    cron\_schedule = optional(string, "0 7 * * *")<br/>    included\_tags = optional(list(string), [])<br/>  })</pre> | `{}` | no |
+| <a name="input_workflow_config"></a> [workflow\_config](#input\_workflow\_config) | Workflow (scheduled invocation) configuration, created only when git\_remote\_settings is set. Runs as var.service\_account | <pre>object({<br/>    name          = optional(string, "production")<br/>    cron_schedule = optional(string, "0 7 * * *")<br/>    included_tags = optional(list(string), [])<br/>  })</pre> | `{}` | no |
 | <a name="input_workspace_schema_suffix"></a> [workspace\_schema\_suffix](#input\_workspace\_schema\_suffix) | Schema suffix applied to development workspace compilations, keeping workspace output apart from production datasets | `string` | `"_dev"` | no |
 
 ## Outputs
@@ -83,6 +85,7 @@ No modules.
 | <a name="output_release_config_id"></a> [release\_config\_id](#output\_release\_config\_id) | ID of the release config, or null when no Git remote is configured |
 | <a name="output_workflow_config_id"></a> [workflow\_config\_id](#output\_workflow\_config\_id) | ID of the workflow config, or null when no Git remote is configured |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- markdownlint-enable MD037 -->
 
 ## Role and Permissions
 
