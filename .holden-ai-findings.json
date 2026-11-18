@@ -1,0 +1,77 @@
+{
+  "category": "all",
+  "findings": [
+    {
+      "confidence": "medium",
+      "explanation": "The module grants service-NUMBER@gcp-sa-dataform before any repository exists, but the Dataform service agent is created lazily (normally by the first repository), so on a project that has never used Dataform the three grants fail with 'service account does not exist'. Even when it exists, the CMEK repository is created immediately after the grants and IAM propagation lag can make the first create fail. Apply-time ordering issue (reliability is the closest principle); invisible to per-resource rules.",
+      "file": "google_kms_crypto_key_iam_member.dataform.tf",
+      "first_seen": "2026-11-18",
+      "fixable": false,
+      "id": "HOLDEN_AI_001",
+      "last_seen": "2026-11-18",
+      "line": 1,
+      "principle": "reliability",
+      "related_resources": [
+        "google_secret_manager_secret_iam_member.token",
+        "google_service_account_iam_member.token_creator",
+        "google_dataform_repository.main"
+      ],
+      "remediation": "Create the agent with google_project_service_identity (dataform.googleapis.com) and make the grants depend on it; gate the repository on a time_sleep after the grants.",
+      "resource": "google_kms_crypto_key_iam_member.dataform",
+      "severity": "MEDIUM",
+      "status": "fixed",
+      "suppression_reason": null,
+      "title": "First apply on a fresh project can fail: Dataform service agent may not exist yet and CMEK/IAM grants are not given time to propagate",
+      "unresolved_since": null
+    },
+    {
+      "confidence": "medium",
+      "explanation": "local.service_account_id hard-codes the provider's project into the service account resource name, although var.service_account accepts any *.iam.gserviceaccount.com email. A runner service account kept in a central project produces a resource name pointing at the wrong project and the setIamPolicy call fails (or targets nothing). The project is encoded in the email itself.",
+      "file": "locals.tf",
+      "first_seen": "2026-11-18",
+      "fix": "service_account_project = regex(\"@([^@]+)\\\\.iam\\\\.gserviceaccount\\\\.com$\", var.service_account)[0]\nservice_account_id      = \"projects/${local.service_account_project}/serviceAccounts/${var.service_account}\"",
+      "fixable": true,
+      "id": "HOLDEN_AI_002",
+      "last_seen": "2026-11-18",
+      "line": 1,
+      "principle": "reliability",
+      "related_resources": [
+        "google_service_account_iam_member.token_creator"
+      ],
+      "remediation": "Derive the project from the email: regex(\"@([^@]+)\\\\.iam\\\\.gserviceaccount\\\\.com$\", var.service_account)[0].",
+      "resource": "local.service_account_id",
+      "severity": "MEDIUM",
+      "status": "fixed",
+      "suppression_reason": null,
+      "title": "Token Creator grant targets projects/<provider project>/serviceAccounts/<email>, wrong for a service account from another project",
+      "unresolved_since": null
+    },
+    {
+      "confidence": "high",
+      "explanation": "A KMS key resource name is not secret (HLD_TF_050 itself exempts *_name), but sensitive = true redacts it everywhere it flows. kms_key_name forces replacement of google_dataform_repository, so a key change shows as '(sensitive value)' next to a destroy/create of the repository, and a reviewer cannot see why the repository (and a Dataform-hosted repository's code) is being destroyed.",
+      "file": "variables.tf",
+      "first_seen": "2026-11-18",
+      "fix": "Delete the line `sensitive   = true` from variable \"kms_key_name\".",
+      "fixable": true,
+      "id": "HOLDEN_AI_003",
+      "last_seen": "2026-11-18",
+      "line": 33,
+      "principle": "maintainability",
+      "related_resources": [
+        "google_dataform_repository.main",
+        "google_kms_crypto_key_iam_member.dataform"
+      ],
+      "remediation": "Remove sensitive = true from variable.kms_key_name.",
+      "resource": "variable.kms_key_name",
+      "severity": "LOW",
+      "status": "fixed",
+      "suppression_reason": null,
+      "title": "kms_key_name marked sensitive hides a ForceNew repository replacement in plan output",
+      "unresolved_since": null
+    }
+  ],
+  "scan_date": "2026-11-18T12:00:00Z",
+  "scan_path": ".",
+  "suggested_policies": [],
+  "suggested_suppressions": []
+}

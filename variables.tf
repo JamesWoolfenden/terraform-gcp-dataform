@@ -33,7 +33,6 @@ variable "display_name" {
 variable "kms_key_name" {
   type        = string
   description = "CMEK key used to encrypt the repository and its derived data; must be in the same region as the repository"
-  sensitive   = true
 
   validation {
     condition     = length(trimspace(var.kms_key_name)) > 0

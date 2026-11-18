@@ -21,9 +21,5 @@ resource "google_dataform_repository" "main" {
     schema_suffix    = var.workspace_schema_suffix
   }
 
-  depends_on = [
-    google_kms_crypto_key_iam_member.dataform,
-    google_secret_manager_secret_iam_member.token,
-    google_service_account_iam_member.token_creator,
-  ]
+  depends_on = [time_sleep.iam_propagation]
 }
